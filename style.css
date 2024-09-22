@@ -218,7 +218,6 @@ h1, p {
     padding: 60px 30px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    max-width: 800px;
     text-align: center;
     z-index: 2;
     position: relative;
