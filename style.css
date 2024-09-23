@@ -497,7 +497,7 @@ h5{
 .close {
     position: absolute;
     top: 20px;
-    left: 800px;
+    right: 20%;
     color: #ffffff;
     font-size: 35px;
     font-weight: bold;
