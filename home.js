@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const mockApiUrl = 'https://66edc361380821644cddefa5.mockapi.io/celebrations'
-    
-  
+    const mockApiUrl = "https://66edc361380821644cddefa5.mockapi.io/celebrations"
     
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('fullSizeImage');
@@ -25,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentRegion = null;
 
-    
     function hideAllRegions() {
         regions.forEach(region => {
             const regionContainer = document.getElementById(`region-container-${region.id}`);
@@ -33,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    
     function fetchAndDisplayImages(region) {
         const celebrationsGallery = document.getElementById(`celebrations-gallery-${region.id}`);
         celebrationsGallery.innerHTML = ''; 
@@ -45,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 regionImages.forEach(imageData => {
                     const imgContainer = document.createElement('div');
                     imgContainer.classList.add('image-container');
+                    imgContainer.setAttribute('data-id', imageData.id); 
 
                     const imgElement = document.createElement('img');
                     imgElement.src = imageData.url;
@@ -80,7 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         const likeCountElem = this.nextElementSibling;
                         let currentLikes = parseInt(likeCountElem.textContent, 10);
 
-                        const imageUrl = this.closest('.image-container').querySelector('img').src;
+                        const imageContainer = this.closest('.image-container');
+                        const imageId = imageContainer.getAttribute('data-id'); 
+
                         let liked = this.classList.contains('liked');
 
                         if (liked) {
@@ -94,53 +93,41 @@ document.addEventListener('DOMContentLoaded', function () {
                         likeCountElem.textContent = currentLikes;
 
                         
-                        fetch(`${mockApiUrl}?url=${imageUrl}`)
-                            .then(response => response.json())
-                            .then(imageData => {
-                                if (imageData && imageData.length > 0) {
-                                    const imageId = imageData[0].id;
-                                    fetch(`${mockApiUrl}/${imageId}`, {
-                                        method: 'PUT',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({ likes: currentLikes })
-                                    })
-                                    .then(response => response.json())
-                                    .then(updatedImage => {
-                                        console.log('Likes updated:', updatedImage.likes);
-                                    })
-                                    .catch(error => {
-                                        console.error('Error updating likes:', error);
-                                    });
-                                }
-                            })
-                            .catch(error => console.error('Error fetching image:', error));
+                        fetch(`${mockApiUrl}/${imageId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ likes: currentLikes })
+                        })
+                        .then(response => response.json())
+                        .then(updatedImage => {
+                            console.log('Likes updated:', updatedImage.likes);
+                        })
+                        .catch(error => {
+                            console.error('Error updating likes:', error);
+                        });
                     });
                 });
             })
             .catch(error => console.error('Error fetching images:', error));
     }
 
-    
     function showModal(imageUrl) {
         modal.style.display = 'block';
         modalImg.src = imageUrl;
     }
 
-    
     closeBtn.onclick = function () {
         modal.style.display = 'none';
     };
 
-    
     modal.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = 'none';
         }
     };
 
-    
     function handleRegionClick(region) {
         currentRegion = region;
         hideAllRegions();
@@ -151,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchAndDisplayImages(region);
     }
 
-    
     regions.forEach(function (region) {
         const regionElement = document.querySelector(`#${region.id}`);
         if (regionElement) {
@@ -161,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    
     regions.forEach(function (region) {
         const shareButton = document.getElementById(`share-celebration-${region.id}`);
         const imageUrlInput = document.getElementById(`image-url-input-${region.id}`);
@@ -192,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         const imgContainer = document.createElement('div');
                         imgContainer.classList.add('image-container');
+                        imgContainer.setAttribute('data-id', savedImage.id); 
 
                         const imgElement = document.createElement('img');
                         imgElement.src = savedImage.url;
@@ -226,9 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const likeCountElem = this.nextElementSibling;
                             let currentLikes = parseInt(likeCountElem.textContent, 10);
 
-                            
                             if (this.classList.contains('liked')) {
-                                currentLikes
                                 currentLikes--; 
                                 this.classList.remove('liked');
                             } else {
