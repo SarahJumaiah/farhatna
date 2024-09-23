@@ -16,21 +16,32 @@ document.getElementById('registerForm').addEventListener('submit', function(even
         return;
     }
 
-    fetch('https://66e7e68bb17821a9d9da6e50.mockapi.io/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, email, password })
-    })
+    fetch('https://66e7e68bb17821a9d9da6e50.mockapi.io/login?email=' + email)
     .then(response => response.json())
-    .then(data => {
-        messageElement.textContent = 'سيتم توجيهك إلى صفحة تسجيل الدخول...';
-        setTimeout(() => {
-            window.location.href = 'log.html';
-        }, 2000);
+    .then(users => {
+        if (users.length > 0) {
+            messageElement.textContent = 'هذا البريد الإلكتروني مستخدم بالفعل.';
+        } else {
+            fetch('https://66e7e68bb17821a9d9da6e50.mockapi.io/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageElement.textContent = 'سيتم توجيهك إلى صفحة تسجيل الدخول...';
+                setTimeout(() => {
+                    window.location.href = 'log.html';
+                }, 2000);
+            })
+            .catch(err => {
+                messageElement.textContent = 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.';
+            });
+        }
     })
     .catch(err => {
-        messageElement.textContent = 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.';
+        messageElement.textContent = 'حدث خطأ ما أثناء التحقق من البريد الإلكتروني. الرجاء المحاولة مرة أخرى.';
     });
 });
