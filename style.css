@@ -522,7 +522,7 @@ h5{
         right: 20px;
     }
 }
-/* Profile Image and Name */
+
 .user-image svg {
     width: 100px;
     height: 100px;
@@ -540,7 +540,7 @@ h5{
     color: #6c757d;
 }
 
-/* Card Styling */
+
 .card {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -559,7 +559,7 @@ h5{
     padding: 20px;
 }
 
-/* Images Section */
+
 #imagesContainer {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
