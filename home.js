@@ -1,6 +1,11 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const mockApiUrl = 'https://66edc361380821644cddefa5.mockapi.io/celebrations'; 
-
+document.addEventListener('DOMContentLoaded', function () {
+    const mockApiUrl = 'https://66edc361380821644cddefa5.mockapi.io/celebrations';
+    
+    // Modal elements for full-size image display
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('fullSizeImage');
+    const closeBtn = document.querySelector('.close');
+    
     const regions = [
         { id: 'region1', name: 'Ash Sharqiyah' },
         { id: 'region2', name: 'Al Hudud ash Shamaliyah' },
@@ -19,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentRegion = null;
 
+    // Function to hide all regions and their content
     function hideAllRegions() {
         regions.forEach(region => {
             const regionContainer = document.getElementById(`region-container-${region.id}`);
@@ -27,12 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageUrlInput = document.getElementById(`image-url-input-${region.id}`);
 
             if (regionContainer) regionContainer.style.display = 'none';
-            if (celebrationsGallery) celebrationsGallery.style.display = 'none'; 
+            if (celebrationsGallery) celebrationsGallery.style.display = 'none';
             if (shareButton) shareButton.style.display = 'none';
             if (imageUrlInput) imageUrlInput.style.display = 'none';
         });
     }
 
+    // Function to fetch and display images for the selected region
     function fetchAndDisplayImages(region) {
         const celebrationsGallery = document.getElementById(`celebrations-gallery-${region.id}`);
         celebrationsGallery.innerHTML = ''; 
@@ -52,17 +59,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const nameLabel = document.createElement('div');
                     nameLabel.classList.add('name-label');
-                    nameLabel.textContent = imageData.name || "Unknown User"; 
+                    nameLabel.textContent = imageData.name || "Unknown User";
 
                     imgContainer.appendChild(imgElement);
                     imgContainer.appendChild(nameLabel);
                     celebrationsGallery.appendChild(imgContainer);
                 });
-                celebrationsGallery.style.display = 'block'; 
+                celebrationsGallery.style.display = 'block';
+
+                // Add click event to each image to show in modal
+                document.querySelectorAll('.celebration-image').forEach(img => {
+                    img.addEventListener('click', function () {
+                        showModal(this.src);
+                    });
+                });
             })
             .catch(error => console.error('Error fetching images:', error));
     }
 
+    // Function to handle region clicks
     function handleRegionClick(region) {
         currentRegion = region;
         hideAllRegions();
@@ -75,27 +90,46 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchAndDisplayImages(region);
     }
 
-    regions.forEach(function(region) {
+    // Show modal with full-size image
+    function showModal(imageUrl) {
+        modal.style.display = 'block';
+        modalImg.src = imageUrl;
+    }
+
+    // Close modal
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    modal.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    // Event listeners for region clicks
+    regions.forEach(function (region) {
         const regionElement = document.querySelector(`#${region.id}`);
         if (regionElement) {
-            regionElement.addEventListener('click', function() {
+            regionElement.addEventListener('click', function () {
                 handleRegionClick(region);
             });
         }
     });
 
-    regions.forEach(function(region) {
+    // Event listeners for submitting images
+    regions.forEach(function (region) {
         const shareButton = document.getElementById(`share-celebration-${region.id}`);
         const imageUrlInput = document.getElementById(`image-url-input-${region.id}`);
         const submitImageButton = document.getElementById(`submit-image-${region.id}`);
         const imageUrlField = document.getElementById(`image-url-${region.id}`);
 
         if (shareButton && imageUrlInput && submitImageButton && imageUrlField) {
-            shareButton.addEventListener('click', function() {
+            shareButton.addEventListener('click', function () {
                 imageUrlInput.style.display = 'block';
             });
 
-            submitImageButton.addEventListener('click', function() {
+            submitImageButton.addEventListener('click', function () {
                 const imageUrl = imageUrlField.value;
                 if (imageUrl && currentRegion) {
                     const userName = sessionStorage.getItem('userName') || 'Anonymous';
@@ -130,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         imageUrlField.value = '';
                         imageUrlInput.style.display = 'none';
+
+                        // Add click event to the new image
+                        imgElement.addEventListener('click', function () {
+                            showModal(savedImage.url);
+                        });
                     })
                     .catch(error => {
                         console.error('Error saving image:', error);
