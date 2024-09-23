@@ -356,49 +356,6 @@ h5{
     text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.309);
 }
 
-.image-container {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    width: 200px;
-    height: 200px;
-    margin: 5px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.celebration-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
-.name-label {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;  
-    color: white;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 14px;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1;
-    transition: opacity 0.3s ease;
-    opacity: 1;
-}
-
-.image-container:hover .celebration-image {
-    transform: scale(1.1);
-}
-
-.image-container:hover .name-label {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-
 #quizModal .modal-content {
     background-color: #f8f9fa;
     border-radius: 15px;
@@ -470,6 +427,52 @@ h5{
     margin-right: 10px;
 }
 
+
+.image-container {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.celebration-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.name-label {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;  
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+.like-icon {
+    cursor: pointer;
+    color: gray;
+    transition: color 0.3s ease;
+}
+
+.like-icon.liked {
+    color: red;
+}
+
+
+
 .image-modal {
     display: none;
     position: fixed;
@@ -518,4 +521,88 @@ h5{
         top: 70px;
         right: 20px;
     }
+}
+/* Profile Image and Name */
+.user-image svg {
+    width: 100px;
+    height: 100px;
+}
+
+#profileName {
+    font-size: 20px;
+    font-weight: 600;
+    color: #005f30;
+    margin-top: 10px;
+}
+
+#profileEmail {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #c4e3c6;
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Images Section */
+#imagesContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.image-card {
+    background-color: #ffffff08;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+}
+
+.image-card img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.image-card img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.delete-btn {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c9302c;
 }

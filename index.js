@@ -2,7 +2,7 @@ function submitQuiz() {
     
     const selectedAnswer = document.querySelector('input[name="answer"]:checked');
     const feedbackElement = document.getElementById('quizFeedback');
-    
+ 
     
     if (selectedAnswer) {
         if (selectedAnswer.value === '2') {

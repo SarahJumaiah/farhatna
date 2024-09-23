@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const mockApiUrl = 'https://66edc361380821644cddefa5.mockapi.io/celebrations';
+    const mockApiUrl = 'https://66edc361380821644cddefa5.mockapi.io/celebrations'
     
-    // Modal elements for full-size image display
+  
+    
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('fullSizeImage');
     const closeBtn = document.querySelector('.close');
@@ -24,22 +25,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentRegion = null;
 
-    // Function to hide all regions and their content
+    
     function hideAllRegions() {
         regions.forEach(region => {
             const regionContainer = document.getElementById(`region-container-${region.id}`);
-            const celebrationsGallery = document.getElementById(`celebrations-gallery-${region.id}`);
-            const shareButton = document.getElementById(`share-celebration-${region.id}`);
-            const imageUrlInput = document.getElementById(`image-url-input-${region.id}`);
-
             if (regionContainer) regionContainer.style.display = 'none';
-            if (celebrationsGallery) celebrationsGallery.style.display = 'none';
-            if (shareButton) shareButton.style.display = 'none';
-            if (imageUrlInput) imageUrlInput.style.display = 'none';
         });
     }
 
-    // Function to fetch and display images for the selected region
+    
     function fetchAndDisplayImages(region) {
         const celebrationsGallery = document.getElementById(`celebrations-gallery-${region.id}`);
         celebrationsGallery.innerHTML = ''; 
@@ -59,7 +53,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const nameLabel = document.createElement('div');
                     nameLabel.classList.add('name-label');
-                    nameLabel.textContent = imageData.name || "Unknown User";
+                    nameLabel.innerHTML = `
+                        <span class="user-name">${imageData.name || "Unknown User"}</span>
+                        <span class="like-container">
+                            <i class="far fa-heart like-icon"></i> 
+                            <span class="like-count">${imageData.likes || 0}</span>
+                        </span>
+                    `;
 
                     imgContainer.appendChild(imgElement);
                     imgContainer.appendChild(nameLabel);
@@ -67,47 +67,91 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 celebrationsGallery.style.display = 'block';
 
-                // Add click event to each image to show in modal
+                
                 document.querySelectorAll('.celebration-image').forEach(img => {
                     img.addEventListener('click', function () {
                         showModal(this.src);
+                    });
+                });
+
+                
+                document.querySelectorAll('.like-icon').forEach(function (heartIcon) {
+                    heartIcon.addEventListener('click', function () {
+                        const likeCountElem = this.nextElementSibling;
+                        let currentLikes = parseInt(likeCountElem.textContent, 10);
+
+                        const imageUrl = this.closest('.image-container').querySelector('img').src;
+                        let liked = this.classList.contains('liked');
+
+                        if (liked) {
+                            currentLikes--; 
+                            this.classList.remove('liked');
+                        } else {
+                            currentLikes++; 
+                            this.classList.add('liked');
+                        }
+
+                        likeCountElem.textContent = currentLikes;
+
+                        
+                        fetch(`${mockApiUrl}?url=${imageUrl}`)
+                            .then(response => response.json())
+                            .then(imageData => {
+                                if (imageData && imageData.length > 0) {
+                                    const imageId = imageData[0].id;
+                                    fetch(`${mockApiUrl}/${imageId}`, {
+                                        method: 'PUT',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ likes: currentLikes })
+                                    })
+                                    .then(response => response.json())
+                                    .then(updatedImage => {
+                                        console.log('Likes updated:', updatedImage.likes);
+                                    })
+                                    .catch(error => {
+                                        console.error('Error updating likes:', error);
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Error fetching image:', error));
                     });
                 });
             })
             .catch(error => console.error('Error fetching images:', error));
     }
 
-    // Function to handle region clicks
-    function handleRegionClick(region) {
-        currentRegion = region;
-        hideAllRegions();
-
-        const regionContainer = document.getElementById(`region-container-${region.id}`);
-        const shareButton = document.getElementById(`share-celebration-${region.id}`);
-        if (regionContainer) regionContainer.style.display = 'block';
-        if (shareButton) shareButton.style.display = 'block';
-
-        fetchAndDisplayImages(region);
-    }
-
-    // Show modal with full-size image
+    
     function showModal(imageUrl) {
         modal.style.display = 'block';
         modalImg.src = imageUrl;
     }
 
-    // Close modal
+    
     closeBtn.onclick = function () {
         modal.style.display = 'none';
     };
 
+    
     modal.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = 'none';
         }
     };
 
-    // Event listeners for region clicks
+    
+    function handleRegionClick(region) {
+        currentRegion = region;
+        hideAllRegions();
+
+        const regionContainer = document.getElementById(`region-container-${region.id}`);
+        if (regionContainer) regionContainer.style.display = 'block';
+
+        fetchAndDisplayImages(region);
+    }
+
+    
     regions.forEach(function (region) {
         const regionElement = document.querySelector(`#${region.id}`);
         if (regionElement) {
@@ -117,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Event listeners for submitting images
+    
     regions.forEach(function (region) {
         const shareButton = document.getElementById(`share-celebration-${region.id}`);
         const imageUrlInput = document.getElementById(`image-url-input-${region.id}`);
@@ -133,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imageUrl = imageUrlField.value;
                 if (imageUrl && currentRegion) {
                     const userName = sessionStorage.getItem('userName') || 'Anonymous';
-                    const newImage = { url: imageUrl, region: currentRegion.name, name: userName };
+                    const newImage = { url: imageUrl, region: currentRegion.name, name: userName, likes: 0 };
 
                     fetch(mockApiUrl, {
                         method: 'POST',
@@ -156,7 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         const nameLabel = document.createElement('div');
                         nameLabel.classList.add('name-label');
-                        nameLabel.textContent = userName;
+                        nameLabel.innerHTML = `
+                            <span class="user-name">${userName}</span>
+                            <span class="like-container">
+                                <i class="far fa-heart like-icon"></i> 
+                                <span class="like-count">0</span>
+                            </span>
+                        `;
 
                         imgContainer.appendChild(imgElement);
                         imgContainer.appendChild(nameLabel);
@@ -165,9 +215,44 @@ document.addEventListener('DOMContentLoaded', function () {
                         imageUrlField.value = '';
                         imageUrlInput.style.display = 'none';
 
-                        // Add click event to the new image
+                        
                         imgElement.addEventListener('click', function () {
                             showModal(savedImage.url);
+                        });
+
+                        
+                        const heartIcon = nameLabel.querySelector('.like-icon');
+                        heartIcon.addEventListener('click', function () {
+                            const likeCountElem = this.nextElementSibling;
+                            let currentLikes = parseInt(likeCountElem.textContent, 10);
+
+                            
+                            if (this.classList.contains('liked')) {
+                                currentLikes
+                                currentLikes--; 
+                                this.classList.remove('liked');
+                            } else {
+                                currentLikes++; 
+                                this.classList.add('liked');
+                            }
+
+                            likeCountElem.textContent = currentLikes;
+
+                            
+                            fetch(`${mockApiUrl}/${savedImage.id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ likes: currentLikes })
+                            })
+                            .then(response => response.json())
+                            .then(updatedImage => {
+                                console.log('Likes updated:', updatedImage.likes);
+                            })
+                            .catch(error => {
+                                console.error('Error updating likes:', error);
+                            });
                         });
                     })
                     .catch(error => {
